@@ -66,5 +66,30 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         <SiteFooter />
       </div>
     </div>
+
+    <script is:inline>
+      // 代码块复制：教程站点的高频动作，纯增强，无 JS 也能读
+      (() => {
+        const blocks = document.querySelectorAll('.prose pre');
+        for (const pre of blocks) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'copy-btn';
+          btn.textContent = '复制';
+          btn.setAttribute('aria-label', '复制代码');
+          btn.addEventListener('click', async () => {
+            const code = pre.querySelector('code')?.innerText ?? pre.innerText;
+            try {
+              await navigator.clipboard.writeText(code);
+              btn.textContent = '已复制';
+            } catch {
+              btn.textContent = '失败';
+            }
+            setTimeout(() => (btn.textContent = '复制'), 1600);
+          });
+          pre.appendChild(btn);
+        }
+      })();
+    </script>
   </body>
 </html>

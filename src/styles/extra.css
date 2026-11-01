@@ -1,5 +1,14 @@
 /* 追加：页眉分区标识、首屏事实行、索引栏标签排版 */
 
+.entry__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.entry__title a:hover {
+  text-decoration: none;
+}
+
 .site-header__section {
   font-family: var(--font-mono);
   font-size: 11px;

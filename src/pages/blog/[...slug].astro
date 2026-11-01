@@ -49,7 +49,9 @@ const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
             )
           }
           {post.data.difficulty && <span>{post.data.difficulty}</span>}
-          {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+          {post.data.tags.map((t) => (
+            <a class="tag" href={`/tags/${t}`}>{t}</a>
+          ))}
         </div>
       </header>
 

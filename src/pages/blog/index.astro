@@ -43,18 +43,22 @@ const loose = posts.filter((p) => !p.data.series);
         </div>
         <div class="entries">
           {list.map((post) => (
-            <a class="entry" href={`/blog/${post.id}`}>
+            <div class="entry">
               <div class="entry__date">第 {post.data.seriesOrder ?? '–'} 篇</div>
               <div>
-                <h3 class="entry__title">{post.data.title}</h3>
+                <h3 class="entry__title">
+                  <a href={`/blog/${post.id}`}>{post.data.title}</a>
+                </h3>
                 <p class="entry__desc">{post.data.description}</p>
                 <div class="entry__meta">
                   <span>{fmtDate(post.data.pubDate)}</span>
                   {post.data.difficulty && <span class="tag">{post.data.difficulty}</span>}
-                  {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+                  {post.data.tags.slice(0, 3).map((t) => (
+                    <a class="tag" href={`/tags/${t}`}>{t}</a>
+                  ))}
                 </div>
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </section>
@@ -72,17 +76,21 @@ const loose = posts.filter((p) => !p.data.series);
         </div>
         <div class="entries">
           {loose.map((post) => (
-            <a class="entry" href={`/blog/${post.id}`}>
+            <div class="entry">
               <div class="entry__date">{fmtDate(post.data.pubDate)}</div>
               <div>
-                <h3 class="entry__title">{post.data.title}</h3>
+                <h3 class="entry__title">
+                  <a href={`/blog/${post.id}`}>{post.data.title}</a>
+                </h3>
                 <p class="entry__desc">{post.data.description}</p>
                 <div class="entry__meta">
                   {post.data.difficulty && <span class="tag">{post.data.difficulty}</span>}
-                  {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+                  {post.data.tags.slice(0, 3).map((t) => (
+                    <a class="tag" href={`/tags/${t}`}>{t}</a>
+                  ))}
                 </div>
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </section>

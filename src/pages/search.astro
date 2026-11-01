@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="搜索" description="在教程与随笔里找东西。索引在构建时生成，没有后端。">
+  <section class="hero">
+    <h1>搜索</h1>
+    <p>索引在构建时生成，查询在浏览器里跑——没有后端，也没有把你的关键词发到任何地方。</p>
+  </section>
+
+  <section class="section">
+    <div id="search" class="searchbox"></div>
+    <noscript>
+      <p class="empty">搜索需要 JavaScript。你也可以直接翻 <a href="/blog">教程</a> 或 <a href="/notes">随笔</a>。</p>
+    </noscript>
+  </section>
+
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script src="/pagefind/pagefind-ui.js" is:inline></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.PagefindUI) {
+        document.getElementById('search').innerHTML =
+          '<p class="empty">搜索索引还没生成（构建时缺了 pagefind 这一步）。</p>';
+        return;
+      }
+      new window.PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+        excerptLength: 20,
+        translations: {
+          placeholder: '搜教程、随笔…',
+          zero_results: '没有找到「[SEARCH_TERM]」',
+          many_results: '找到 [COUNT] 条结果',
+          one_result: '找到 1 条结果',
+          alt_search: '换个词试试',
+          search_suggestion: '也许你想找：',
+          loading: '查找中…',
+        },
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style is:global>
+  /* Pagefind UI 的外观变量，接到本站的 token 上 */
+  .searchbox {
+    --pagefind-ui-scale: 0.92;
+    --pagefind-ui-primary: var(--ink);
+    --pagefind-ui-text: var(--ink);
+    --pagefind-ui-background: var(--paper);
+    --pagefind-ui-border: var(--rule);
+    --pagefind-ui-tag: var(--paper-sunk);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 0;
+    --pagefind-ui-font: var(--font-sans);
+    max-width: 62ch;
+  }
+
+  .searchbox .pagefind-ui__search-input {
+    font-family: var(--font-sans);
+    border-radius: 0;
+  }
+
+  .searchbox .pagefind-ui__result {
+    border-top: 1px solid var(--rule);
+    padding: 16px 0;
+  }
+
+  .searchbox .pagefind-ui__result-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+  }
+
+  .searchbox .pagefind-ui__result-nested {
+    border-left: 2px solid var(--rule);
+    padding-left: 14px;
+  }
+
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tags-cloud a.tag {
+    font-size: 12.5px;
+    padding: 5px 10px;
+  }
+
+  .tags-cloud__n {
+    font-size: 10px;
+    color: var(--ink-soft);
+    margin-left: 4px;
+  }
+</style>

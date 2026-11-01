@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const [posts, notes] = await Promise.all([
+    getCollection('blog', ({ data }) => !data.draft),
+    getCollection('notes'),
+  ]);
+
+  const map = new Map<string, { posts: typeof posts; notes: typeof notes }>();
+  for (const post of posts) {
+    for (const tag of post.data.tags) {
+      const entry = map.get(tag) ?? { posts: [], notes: [] };
+      entry.posts.push(post);
+      map.set(tag, entry);
+    }
+  }
+  for (const note of notes) {
+    for (const tag of note.data.tags) {
+      const entry = map.get(tag) ?? { posts: [], notes: [] };
+      entry.notes.push(note);
+      map.set(tag, entry);
+    }
+  }
+
+  return [...map.entries()].map(([tag, entry]) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: entry.posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+      notes: entry.notes.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+    },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts, notes } = Astro.props;
+const total = posts.length + notes.length;
+---
+
+<BaseLayout title={`标签：${tag}`} description={`带「${tag}」标签的教程与随笔。`}>
+  <section class="hero">
+    <h1>标签：{tag}</h1>
+    <p>把跨系列、跨年份的同一主题串起来的地方。</p>
+    <div class="hero__facts">
+      <span>共 {total} 条</span>
+      <span>教程 {posts.length}</span>
+      <span>随笔 {notes.length}</span>
+      <span><a href="/tags">全部标签</a></span>
+    </div>
+  </section>
+
+  {
+    posts.length > 0 && (
+      <section class="section">
+        <div class="section__head">
+          <h2>教程</h2>
+        </div>
+        <div class="entries">
+          {posts.map((post) => (
+            <a class="entry" href={`/blog/${post.id}`}>
+              <div class="entry__date">
+                {post.data.pubDate.getFullYear()}.{String(post.data.pubDate.getMonth() + 1).padStart(2, '0')}
+              </div>
+              <div>
+                <h3 class="entry__title">{post.data.title}</h3>
+                <p class="entry__desc">{post.data.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    notes.length > 0 && (
+      <section class="section">
+        <div class="section__head">
+          <h2>随笔</h2>
+        </div>
+        <div style="padding-top:20px">
+          {notes.map((note) => (
+            <a class="note" href={`/notes/${note.id}`}>
+              <div class="note__date">
+                {note.data.date.getFullYear()}.
+                {String(note.data.date.getMonth() + 1).padStart(2, '0')}.
+                {String(note.data.date.getDate()).padStart(2, '0')}
+              </div>
+              {note.data.title && <h3 class="note__title">{note.data.title}</h3>}
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>

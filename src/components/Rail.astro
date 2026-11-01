@@ -16,7 +16,7 @@ const path = Astro.url.pathname;
 const brand = site.title.slice(0, 2);
 ---
 
-<aside class="rail" aria-label="索引">
+<aside class="rail" aria-label="索引" data-pagefind-ignore>
   <a class="rail__brand" href="/" aria-label={`${site.title} 首页`}>{brand}</a>
 
   <nav class="rail__marks" aria-label="主导航">

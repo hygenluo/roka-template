@@ -35,10 +35,12 @@ const latestGames = games.filter((g) => g.data.status === '可玩').slice(0, 2);
     <div class="entries">
       {
         posts.slice(0, 3).map((post) => (
-          <a class="entry" href={`/blog/${post.id}`}>
+          <div class="entry">
             <div class="entry__date">{fmtDate(post.data.pubDate)}</div>
             <div>
-              <h3 class="entry__title">{post.data.title}</h3>
+              <h3 class="entry__title">
+                <a href={`/blog/${post.id}`}>{post.data.title}</a>
+              </h3>
               <p class="entry__desc">{post.data.description}</p>
               <div class="entry__meta">
                 {post.data.series && (
@@ -47,10 +49,12 @@ const latestGames = games.filter((g) => g.data.status === '可玩').slice(0, 2);
                     {post.data.seriesOrder ? ` · ${post.data.seriesOrder}` : ''}
                   </span>
                 )}
-                {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+                {post.data.tags.slice(0, 3).map((t) => (
+                  <a class="tag" href={`/tags/${t}`}>{t}</a>
+                ))}
               </div>
             </div>
-          </a>
+          </div>
         ))
       }
       {posts.length === 0 && <p class="empty">还没有教程。第一篇通常最难开始。</p>}

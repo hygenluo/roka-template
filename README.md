@@ -86,6 +86,21 @@ pnpm verify   # 同上，CI 和部署用这个
 - **新增字段必须是 optional** —— 否则所有历史文章立刻构建失败。
 - **删除或重命名字段是破坏性变更** —— 必须配 `scripts/migrate-content.mjs` 并升 `templateVersion`。
 
+## 页面
+
+| 路由 | 说明 |
+|---|---|
+| `/` | 首屏 + 最新教程 + 最近随笔 + 精选项目 |
+| `/blog` `/blog/[id]` | 教程；按系列分组，系列内带上一篇/下一篇 |
+| `/notes` `/notes/[id]` | 随笔；按年月分组，窄栏 + 无衬线正文 |
+| `/projects` `/projects/[id]` | 项目三分区；网盘卡片带提取码与"最后校验"日期 |
+| `/games` `/games/[id]` | 小游戏外壳（全出血、无索引栏），iframe 沙箱 |
+| `/tags` `/tags/[tag]` | 横向索引 |
+| `/search` | Pagefind 静态搜索，索引在 `pnpm build` 最后一步生成 |
+| `/rss.xml` `/admin` | 订阅、站内编辑 |
+
+`pnpm build` = 前置同步 → `astro build` → `pagefind --site dist`，三步缺一不可。
+
 ## 视觉系统
 
 设计 token 在 `src/styles/global.css`，档位由内容仓库的 `theme.json` 选择（6 个键，多一个键构建失败）。

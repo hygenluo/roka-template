@@ -6,17 +6,20 @@
   "scripts": {
     "stage": "node scripts/prepare.mjs",
     "dev": "node scripts/prepare.mjs --dev && astro dev",
-    "build": "node scripts/prepare.mjs && astro build",
+    "build": "node scripts/prepare.mjs && astro build && pagefind --site dist",
     "preview": "astro preview",
     "check:boundary": "node scripts/check-boundary.mjs",
-    "verify": "node scripts/prepare.mjs && astro build"
+    "verify": "node scripts/prepare.mjs && astro build && pagefind --site dist"
   },
   "dependencies": {
-    "@fontsource/noto-sans-sc": "^5.3.1",
-    "@fontsource/noto-serif-sc": "^5.3.1",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource/noto-sans-sc": "^5.3.1",
+    "@fontsource/noto-serif-sc": "^5.3.1",
     "astro": "^7.4.4",
     "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "pagefind": "^1.6.0"
   }
 }

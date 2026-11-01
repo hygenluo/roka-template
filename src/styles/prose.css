@@ -84,6 +84,7 @@
 }
 
 .prose pre {
+  position: relative;
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.72;
@@ -93,6 +94,35 @@
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   background: var(--paper-sunk);
+}
+
+/* 复制按钮：默认半透明，悬停才明显 —— 不该跟代码抢注意力 */
+.copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  appearance: none;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.18s ease, color 0.18s ease;
+}
+
+.prose pre:hover .copy-btn,
+.copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.copy-btn:hover {
+  color: var(--ink);
+  border-color: var(--rule-2);
 }
 
 .prose pre code {
