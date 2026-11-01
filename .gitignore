@@ -4,7 +4,7 @@ content/
 # 由 content/ 生成的构建产物
 public/uploads/
 public/game-assets/
-public/admin/config.yml
+public/admin/
 
 # Astro
 dist/
