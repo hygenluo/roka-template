@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const games = await getCollection('games');
+---
+
+<BaseLayout title="小游戏" description="能直接在页面里玩的小东西。跑在沙箱 iframe 里，存档由本站代存。">
+  <section class="hero">
+    <h1>小游戏</h1>
+    <p>能直接在页面里玩的小东西。跑在沙箱 iframe 里，存档由本站代存。</p>
+    <div class="hero__facts">
+      <span>共 {games.length} 个</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="entries">
+      {
+        games.map((game) => (
+          <a class="entry" href={`/games/${game.id}`}>
+            <div class="entry__date">{game.data.status}</div>
+            <div>
+              <h3 class="entry__title">{game.data.title}</h3>
+              <p class="entry__desc">{game.data.summary}</p>
+              <div class="entry__meta">
+                <span class="tag">{game.data.controls}</span>
+                <span class="tag">{game.data.sandbox === 'trusted' ? '同源' : '沙箱'}</span>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+      {games.length === 0 && <p class="empty">还没有小游戏。</p>}
+    </div>
+  </section>
+</BaseLayout>

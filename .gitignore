@@ -1,0 +1,18 @@
+# 内容仓库在这里落地（构建时填充，不是 submodule）
+content/
+
+# 由 content/ 生成的构建产物
+public/uploads/
+public/game-assets/
+public/admin/config.yml
+
+# Astro
+dist/
+.astro/
+node_modules/
+
+# 环境
+.env
+.env.local
+.DS_Store
+Thumbs.db

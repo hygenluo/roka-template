@@ -1,0 +1,70 @@
+---
+import '@fontsource/noto-serif-sc/400.css';
+import '@fontsource/noto-serif-sc/700.css';
+import '@fontsource/noto-sans-sc/400.css';
+import '@fontsource/noto-sans-sc/500.css';
+import '@fontsource-variable/newsreader/wght.css';
+import '@fontsource-variable/newsreader/wght-italic.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
+
+import '../styles/global.css';
+import '../styles/prose.css';
+import '../styles/extra.css';
+
+import Rail from '../components/Rail.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { site } from '../lib/site';
+import { themeCss, themeBootstrap } from '../lib/theme';
+
+interface Props {
+  title?: string;
+  description?: string;
+  stamp?: string;
+}
+
+const { title, description = site.description, stamp } = Astro.props;
+
+const pageTitle = title ? `${title} · ${site.title}` : `${site.title} — ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={site.title} href="/rss.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline set:html={themeBootstrap()}></script>
+    <style is:inline set:html={themeCss()}></style>
+  </head>
+
+  <body>
+    <a class="sr-only" href="#main">跳到正文</a>
+    <div class="shell">
+      <Rail stamp={stamp} />
+
+      <div class="page">
+        <SiteHeader />
+
+        <main id="main">
+          <div class="container">
+            <slot />
+          </div>
+        </main>
+
+        <SiteFooter />
+      </div>
+    </div>
+  </body>
+</html>

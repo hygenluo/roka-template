@@ -1,0 +1,51 @@
+---
+/**
+ * 图片组件：读 sync-media 生成的清单，输出带尺寸的 <img>。
+ * 尺寸是必须的 —— 没有宽高比就会抖（CLS），这在长文里很刺眼。
+ */
+import media from '../data/media.json';
+
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  priority?: boolean;
+}
+
+const {
+  src,
+  alt,
+  class: cls,
+  sizes = '(max-width: 760px) 100vw, 68ch',
+  loading = 'lazy',
+  priority = false,
+} = Astro.props;
+
+type Entry = {
+  w: number | null;
+  h: number | null;
+  variants?: { w: number; src: string }[];
+};
+
+const table = media as Record<string, Entry>;
+const meta = table[src];
+const variants = meta?.variants ?? [];
+const srcset = variants.length
+  ? variants.map((v) => `${v.src} ${v.w}w`).join(', ')
+  : undefined;
+---
+
+<img
+  src={src}
+  srcset={srcset}
+  sizes={srcset ? sizes : undefined}
+  width={meta?.w ?? undefined}
+  height={meta?.h ?? undefined}
+  alt={alt}
+  class={cls}
+  loading={priority ? 'eager' : loading}
+  decoding="async"
+  fetchpriority={priority ? 'high' : undefined}
+/>

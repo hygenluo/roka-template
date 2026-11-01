@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const inSite = projects.filter((p) => p.data.type === 'in-site');
+const external = projects.filter((p) => p.data.type === 'external');
+const games = await getCollection('games');
+
+const ProviderLabel: Record<string, string> = {
+  baidu: '百度网盘',
+  aliyun: '阿里云盘',
+  quark: '夸克网盘',
+  gdrive: 'Google Drive',
+  other: '下载',
+};
+---
+
+<BaseLayout title="项目" description="做完了的、在做的、以及放在别处的东西。">
+  <section class="hero">
+    <h1>项目</h1>
+    <p>做完了的、在做的、以及放在别处的东西。外链会标出最后一次校验的日期——网盘链接自有它的想法。</p>
+    <div class="hero__facts">
+      <span>站内 {inSite.length}</span>
+      <span>外链 {external.length}</span>
+      <span>小游戏 {games.length}</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>站内项目</h2>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-soft)">
+        {inSite.length}
+      </span>
+    </div>
+    {
+      inSite.map((project) => (
+        <a class="proj" href={`/projects/${project.id}`} style="text-decoration:none">
+          <div>
+            <h3 class="proj__title">{project.data.title}</h3>
+            <p class="proj__summary">{project.data.summary}</p>
+            <div class="entry__meta">
+              {project.data.stack.map((s) => <span class="tag">{s}</span>)}
+            </div>
+          </div>
+          <div class="proj__aside">
+            <span class="proj__status">
+              <i class={`dot ${project.data.status === '进行中' ? 'dot--live' : ''}`} />
+              {project.data.status}
+            </span>
+            <span>{project.data.year}</span>
+          </div>
+        </a>
+      ))
+    }
+    {inSite.length === 0 && <p class="empty">还没有站内项目。</p>}
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>可以玩的小游戏</h2>
+      <a href="/games">全部 →</a>
+    </div>
+    {
+      games.map((game) => (
+        <a class="proj" href={`/games/${game.id}`} style="text-decoration:none">
+          <div>
+            <h3 class="proj__title">{game.data.title}</h3>
+            <p class="proj__summary">{game.data.summary}</p>
+            <div class="entry__meta">
+              <span class="tag">{game.data.controls}</span>
+            </div>
+          </div>
+          <div class="proj__aside">
+            <span class="proj__status">
+              <i class={`dot ${game.data.status === '可玩' ? 'dot--live' : ''}`} />
+              {game.data.status}
+            </span>
+          </div>
+        </a>
+      ))
+    }
+    {games.length === 0 && <p class="empty">还没有小游戏。</p>}
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>外链项目</h2>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-soft)">
+        {external.length}
+      </span>
+    </div>
+    {
+      external.map((project) => (
+        <a class="proj" href={`/projects/${project.id}`} style="text-decoration:none">
+          <div>
+            <h3 class="proj__title">{project.data.title}</h3>
+            <p class="proj__summary">{project.data.summary}</p>
+            <div class="entry__meta">
+              {project.data.stack.map((s) => <span class="tag">{s}</span>)}
+              {project.data.links?.download && (
+                <span class="tag">
+                  {ProviderLabel[project.data.links.download.provider] ?? '下载'}
+                </span>
+              )}
+            </div>
+          </div>
+          <div class="proj__aside">
+            <span class="proj__status">
+              <i class={`dot ${project.data.status === '进行中' ? 'dot--live' : ''}`} />
+              {project.data.status}
+            </span>
+            <span>{project.data.year}</span>
+          </div>
+        </a>
+      ))
+    }
+    {external.length === 0 && <p class="empty">还没有外链项目。</p>}
+  </section>
+</BaseLayout>

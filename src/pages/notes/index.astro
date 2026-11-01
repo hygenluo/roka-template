@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { fmtDate, excerpt, KIND_LABEL, stars } from '../../lib/format';
+
+const notes = (await getCollection('notes')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// 按年月分组，像翻一本手账
+const groups = new Map<string, typeof notes>();
+for (const note of notes) {
+  const key = `${note.data.date.getFullYear()} 年 ${note.data.date.getMonth() + 1} 月`;
+  const list = groups.get(key) ?? [];
+  list.push(note);
+  groups.set(key, list);
+}
+
+const kinds = [...new Set(notes.map((n) => n.data.kind))];
+---
+
+<BaseLayout title="随笔" description="日记、读过的书、玩过的游戏、看过的片子。短，不必系统。">
+  <section class="hero">
+    <h1>随笔</h1>
+    <p>日记、读过的书、玩过的游戏、看过的片子。短，不必系统。</p>
+    <div class="hero__facts">
+      <span>共 {notes.length} 条</span>
+      {kinds.map((k) => <span>{KIND_LABEL[k] ?? k}</span>)}
+    </div>
+  </section>
+
+  {
+    [...groups.entries()].map(([label, list]) => (
+      <section class="section">
+        <div class="section__head">
+          <h2>{label}</h2>
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-soft)">
+            {list.length} 条
+          </span>
+        </div>
+        <div style="padding-top:20px">
+          {list.map((note) => (
+            <a class="note" href={`/notes/${note.id}`}>
+              <div class="note__date">
+                {fmtDate(note.data.date)} · {KIND_LABEL[note.data.kind] ?? note.data.kind}
+                {note.data.rating && <span class="stars"> {stars(note.data.rating)}</span>}
+                {note.data.mood && <span> · {note.data.mood}</span>}
+              </div>
+              {note.data.title && <h3 class="note__title">{note.data.title}</h3>}
+              <p class="note__excerpt">{excerpt(note.body, 110)}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  {notes.length === 0 && <p class="empty">还没有随笔。</p>}
+</BaseLayout>

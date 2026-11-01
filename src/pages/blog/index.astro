@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { fmtDate } from '../../lib/format';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// 有系列的按系列分组，其余按时间倒序排成"散篇"
+const seriesMap = new Map<string, typeof posts>();
+for (const post of posts) {
+  if (!post.data.series) continue;
+  const list = seriesMap.get(post.data.series) ?? [];
+  list.push(post);
+  seriesMap.set(post.data.series, list);
+}
+for (const list of seriesMap.values()) {
+  list.sort((a, b) => (a.data.seriesOrder ?? 99) - (b.data.seriesOrder ?? 99));
+}
+const loose = posts.filter((p) => !p.data.series);
+---
+
+<BaseLayout title="教程" description="系统性写下来的东西：一门技术、一套流程、一个能复现的结论。">
+  <section class="hero">
+    <h1>教程</h1>
+    <p>系统性写下来的东西。有系列就按系列读，散篇按时间倒序。</p>
+    <div class="hero__facts">
+      <span>共 {posts.length} 篇</span>
+      <span>系列 {seriesMap.size} 个</span>
+      <span>散篇 {loose.length} 篇</span>
+    </div>
+  </section>
+
+  {
+    [...seriesMap.entries()].map(([name, list]) => (
+      <section class="section">
+        <div class="section__head">
+          <h2>系列 · {name}</h2>
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-soft)">
+            {list.length} 篇
+          </span>
+        </div>
+        <div class="entries">
+          {list.map((post) => (
+            <a class="entry" href={`/blog/${post.id}`}>
+              <div class="entry__date">第 {post.data.seriesOrder ?? '–'} 篇</div>
+              <div>
+                <h3 class="entry__title">{post.data.title}</h3>
+                <p class="entry__desc">{post.data.description}</p>
+                <div class="entry__meta">
+                  <span>{fmtDate(post.data.pubDate)}</span>
+                  {post.data.difficulty && <span class="tag">{post.data.difficulty}</span>}
+                  {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  {
+    loose.length > 0 && (
+      <section class="section">
+        <div class="section__head">
+          <h2>散篇</h2>
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-soft)">
+            {loose.length} 篇
+          </span>
+        </div>
+        <div class="entries">
+          {loose.map((post) => (
+            <a class="entry" href={`/blog/${post.id}`}>
+              <div class="entry__date">{fmtDate(post.data.pubDate)}</div>
+              <div>
+                <h3 class="entry__title">{post.data.title}</h3>
+                <p class="entry__desc">{post.data.description}</p>
+                <div class="entry__meta">
+                  {post.data.difficulty && <span class="tag">{post.data.difficulty}</span>}
+                  {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {posts.length === 0 && <p class="empty">还没有教程。</p>}
+</BaseLayout>

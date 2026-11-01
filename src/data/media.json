@@ -1,0 +1,32 @@
+{
+  "/uploads/2026/10/cover-pipeline.jpg": {
+    "w": 1600,
+    "h": 900,
+    "mtimeMs": 1793575157866.4822,
+    "variants": [
+      {
+        "w": 480,
+        "src": "/uploads/2026/10/cover-pipeline-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/uploads/2026/10/cover-pipeline-960.webp"
+      },
+      {
+        "w": 1440,
+        "src": "/uploads/2026/10/cover-pipeline-1440.webp"
+      }
+    ]
+  },
+  "/uploads/avatar.png": {
+    "w": 512,
+    "h": 512,
+    "mtimeMs": 1793575157849.1885,
+    "variants": [
+      {
+        "w": 480,
+        "src": "/uploads/avatar-480.webp"
+      }
+    ]
+  }
+}

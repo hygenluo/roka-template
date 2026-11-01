@@ -1,0 +1,60 @@
+---
+import { site, isActive } from '../lib/site';
+
+interface Item {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items?: Item[];
+  stamp?: string;
+}
+
+const { items = site.nav, stamp } = Astro.props;
+const path = Astro.url.pathname;
+const brand = site.title.slice(0, 2);
+---
+
+<aside class="rail" aria-label="索引">
+  <a class="rail__brand" href="/" aria-label={`${site.title} 首页`}>{brand}</a>
+
+  <nav class="rail__marks" aria-label="主导航">
+    {
+      items.map((item) => (
+        <a
+          class="rail__mark"
+          href={item.href}
+          aria-current={isActive(item.href, path) ? 'true' : undefined}
+        >
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  {stamp && <div class="rail__stamp" aria-hidden="true">{stamp}</div>}
+
+  <button
+    class="rail__toggle"
+    id="theme-toggle"
+    type="button"
+    aria-label="切换明暗主题"
+    title="切换明暗主题"
+  ><span aria-hidden="true">◐</span></button>
+</aside>
+
+<script is:inline>
+  (() => {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const root = document.documentElement;
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch (e) {}
+    });
+  })();
+</script>

@@ -1,0 +1,22 @@
+{
+  "name": "site-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "stage": "node scripts/prepare.mjs",
+    "dev": "node scripts/prepare.mjs --dev && astro dev",
+    "build": "node scripts/prepare.mjs && astro build",
+    "preview": "astro preview",
+    "check:boundary": "node scripts/check-boundary.mjs",
+    "verify": "node scripts/prepare.mjs && astro build"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans-sc": "^5.3.1",
+    "@fontsource/noto-serif-sc": "^5.3.1",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "astro": "^7.4.4",
+    "sharp": "^0.35.5"
+  }
+}

@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../lib/site';
+import { fmtDate, excerpt, KIND_LABEL, stars } from '../lib/format';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const notes = (await getCollection('notes')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const games = await getCollection('games');
+
+const featured = projects.filter((p) => p.data.featured).slice(0, 3);
+const latestGames = games.filter((g) => g.data.status === '可玩').slice(0, 2);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <h1>{site.title}</h1>
+    <p>{site.description}</p>
+    <div class="hero__facts">
+      <span>教程 {posts.length}</span>
+      <span>随笔 {notes.length}</span>
+      <span>项目 {projects.length}</span>
+      <span>小游戏 {games.length}</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>最新教程</h2>
+      <a href="/blog">全部 →</a>
+    </div>
+    <div class="entries">
+      {
+        posts.slice(0, 3).map((post) => (
+          <a class="entry" href={`/blog/${post.id}`}>
+            <div class="entry__date">{fmtDate(post.data.pubDate)}</div>
+            <div>
+              <h3 class="entry__title">{post.data.title}</h3>
+              <p class="entry__desc">{post.data.description}</p>
+              <div class="entry__meta">
+                {post.data.series && (
+                  <span class="tag tag--series">
+                    {post.data.series}
+                    {post.data.seriesOrder ? ` · ${post.data.seriesOrder}` : ''}
+                  </span>
+                )}
+                {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+              </div>
+            </div>
+          </a>
+        ))
+      }
+      {posts.length === 0 && <p class="empty">还没有教程。第一篇通常最难开始。</p>}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>最近的随笔</h2>
+      <a href="/notes">全部 →</a>
+    </div>
+    {
+      notes.slice(0, 4).map((note) => (
+        <a class="note" href={`/notes/${note.id}`}>
+          <div class="note__date">
+            {fmtDate(note.data.date)} · {KIND_LABEL[note.data.kind] ?? note.data.kind}
+            {note.data.rating && <span class="stars"> {stars(note.data.rating)}</span>}
+          </div>
+          {note.data.title && <h3 class="note__title">{note.data.title}</h3>}
+          <p class="note__excerpt">{excerpt(note.body, 88)}</p>
+        </a>
+      ))
+    }
+    {notes.length === 0 && <p class="empty">还没有随笔。</p>}
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>项目</h2>
+      <a href="/projects">全部 →</a>
+    </div>
+    {
+      featured.map((project) => (
+        <a class="proj" href={`/projects/${project.id}`} style="text-decoration:none">
+          <div>
+            <h3 class="proj__title">{project.data.title}</h3>
+            <p class="proj__summary">{project.data.summary}</p>
+          </div>
+          <div class="proj__aside">
+            <span class="proj__status">
+              <i class={`dot ${project.data.status === '进行中' ? 'dot--live' : ''}`} />
+              {project.data.status}
+            </span>
+            <span>{project.data.year}</span>
+          </div>
+        </a>
+      ))
+    }
+    {latestGames.length > 0 && (
+      <a class="proj" href="/games" style="text-decoration:none">
+        <div>
+          <h3 class="proj__title">可以玩的两个小东西</h3>
+          <p class="proj__summary">
+            {latestGames.map((g) => g.data.title).join(' · ')} —— 都跑在沙箱 iframe 里
+          </p>
+        </div>
+        <div class="proj__aside">
+          <span class="proj__status">
+            <i class="dot dot--live" />可玩
+          </span>
+        </div>
+      </a>
+    )}
+  </section>
+</BaseLayout>

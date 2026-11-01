@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Img from '../components/Img.astro';
+import { site } from '../lib/site';
+
+const about = site.about ?? [];
+---
+
+<BaseLayout title="关于" description={site.author.bio}>
+  <div class="article">
+    <div class="article__body">
+      <header class="article-head article-head--note">
+        <h1>关于</h1>
+        <div class="article-meta">
+          <span>{site.author.name}</span>
+          <span>{site.url.replace(/^https?:\/\//, '')}</span>
+        </div>
+      </header>
+
+      <article class="prose prose--note">
+        {
+          site.author.avatar && (
+            <div style="margin-bottom:24px;max-width:120px">
+              <Img src={site.author.avatar} alt={site.author.name} priority sizes="120px" />
+            </div>
+          )
+        }
+        <p><strong>{site.author.bio}</strong></p>
+        {about.map((p) => <p>{p}</p>)}
+      </article>
+
+      <div class="proj-links">
+        {
+          site.social.map((item) => (
+            <a
+              class="btn btn--ghost"
+              href={item.href}
+              rel="noopener noreferrer"
+              target={item.href.startsWith('http') ? '_blank' : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</BaseLayout>

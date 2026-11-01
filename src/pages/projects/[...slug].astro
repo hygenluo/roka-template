@@ -1,0 +1,99 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Img from '../../components/Img.astro';
+import { fmtDate } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const ProviderLabel: Record<string, string> = {
+  baidu: '百度网盘',
+  aliyun: '阿里云盘',
+  quark: '夸克网盘',
+  gdrive: 'Google Drive',
+  other: '外部下载',
+};
+
+const download = project.data.links?.download;
+---
+
+<BaseLayout title={project.data.title} description={project.data.summary} stamp={String(project.data.year)}>
+  <div class="article">
+    <div class="article__body" style="max-width:calc(var(--measure) + 2rem)">
+      <header class="proj-head">
+        <h1>{project.data.title}</h1>
+        <p class="lede">{project.data.summary}</p>
+        <div class="article-meta">
+          <span>{project.data.type === 'in-site' ? '站内项目' : '外链项目'}</span>
+          <span>{project.data.year}</span>
+          <span class="proj__status">
+            <i class={`dot ${project.data.status === '进行中' ? 'dot--live' : ''}`} />
+            {project.data.status}
+          </span>
+          {project.data.stack.map((s) => <span class="tag">{s}</span>)}
+        </div>
+      </header>
+
+      {
+        project.data.cover && (
+          <figure style="margin:0 0 30px">
+            <Img src={project.data.cover} alt={project.data.title} priority />
+          </figure>
+        )
+      }
+
+      <article class="prose">
+        <Content />
+      </article>
+
+      {
+        download && (
+          <div class="download">
+            <div class="download__meta">
+              {ProviderLabel[download.provider] ?? '下载'}
+              {download.code && (
+                <span>
+                  {' · 提取码 '}
+                  <code>{download.code}</code>
+                </span>
+              )}
+              {project.data.lastChecked && (
+                <span> · 最后校验 {fmtDate(project.data.lastChecked)}</span>
+              )}
+            </div>
+            <a class="btn" href={download.url} target="_blank" rel="noopener noreferrer">
+              去下载
+            </a>
+          </div>
+        )
+      }
+
+      {
+        (project.data.links?.demo || project.data.links?.repo) && (
+          <div class="proj-links">
+            {project.data.links.demo && (
+              <a class="btn" href={project.data.links.demo} target="_blank" rel="noopener noreferrer">
+                打开演示
+              </a>
+            )}
+            {project.data.links.repo && (
+              <a class="btn btn--ghost" href={project.data.links.repo} target="_blank" rel="noopener noreferrer">
+                源码仓库
+              </a>
+            )}
+          </div>
+        )
+      }
+
+      <nav class="pager" aria-label="返回">
+        <div><a href="/projects"><span>←</span>全部项目</a></div>
+      </nav>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,56 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fmtDate, fmtISODate, KIND_LABEL, stars } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+const title = note.data.title ?? `${KIND_LABEL[note.data.kind] ?? ''} · ${fmtDate(note.data.date)}`;
+---
+
+<BaseLayout title={title} description={note.data.mood ?? title} stamp={fmtDate(note.data.date)}>
+  <div class="article">
+    <div class="article__body">
+      <header class="article-head article-head--note">
+        <h1>{title}</h1>
+        <div class="article-meta">
+          <time datetime={fmtISODate(note.data.date)}>{fmtDate(note.data.date)}</time>
+          <span>{KIND_LABEL[note.data.kind] ?? note.data.kind}</span>
+          {note.data.rating && <span class="stars">{stars(note.data.rating)}</span>}
+          {note.data.mood && <span>{note.data.mood}</span>}
+        </div>
+      </header>
+
+      <article class="prose prose--note">
+        <Content />
+      </article>
+
+      {
+        note.data.related && (
+          <div class="related">
+            {note.data.related.type === 'book' ? '在读' : note.data.related.type === 'game' ? '在玩' : '在看'}
+            ：<b>{note.data.related.title}</b>
+            {note.data.related.creator && <span> / {note.data.related.creator}</span>}
+            {note.data.related.url && (
+              <span>
+                {' · '}
+                <a href={note.data.related.url} rel="noopener noreferrer" target="_blank">
+                  查看
+                </a>
+              </span>
+            )}
+          </div>
+        )
+      }
+
+      <nav class="pager" aria-label="返回">
+        <div><a href="/notes"><span>←</span>全部随笔</a></div>
+      </nav>
+    </div>
+  </div>
+</BaseLayout>

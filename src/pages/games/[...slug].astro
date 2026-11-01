@@ -1,0 +1,91 @@
+---
+import BareLayout from '../../layouts/BareLayout.astro';
+
+export async function getStaticPaths() {
+  const { getCollection } = await import('astro:content');
+  const games = await getCollection('games');
+  return games.map((game) => ({ params: { slug: game.id }, props: { game } }));
+}
+
+const { game } = Astro.props;
+
+const sandbox =
+  game.data.sandbox === 'trusted'
+    ? 'allow-scripts allow-same-origin allow-pointer-lock allow-orientation-lock allow-presentation'
+    : 'allow-scripts allow-pointer-lock allow-orientation-lock allow-presentation';
+---
+
+<BareLayout title={game.data.title} description={game.data.summary}>
+  <div class="gbar">
+    <a href="/games">‹ 返回</a>
+    <h1>{game.data.title}</h1>
+    <div class="gbar__right">
+      <span>{game.data.controls}</span>
+      <button id="fs" type="button">全屏</button>
+    </div>
+  </div>
+
+  <div class="stage" id="stage" data-slug={game.id}>
+    <iframe
+      src={game.data.entry}
+      title={game.data.title}
+      sandbox={sandbox}
+      allow="fullscreen"
+      loading="eager"
+      referrerpolicy="no-referrer"
+    ></iframe>
+  </div>
+
+  <div class="gfoot">
+    <span>
+      存档由本站代存{game.data.sandbox === 'trusted' ? ' · 自研游戏，允许同源' : ' · 第三方代码，运行在受限沙箱'}
+    </span>
+    <a href="/projects">看看别的 →</a>
+  </div>
+
+  <script is:inline>
+    // 存档桥：游戏在 iframe 里，站长代码不碰它的存储；
+    // 游戏发 {type:'game:save'}，父页面按 slug 隔离后落 localStorage。
+    (() => {
+      const stage = document.getElementById('stage');
+      const slug = stage?.dataset.slug;
+      if (!slug) return;
+
+      const key = (k) => `game:${slug}:${k}`;
+
+      window.addEventListener('message', (event) => {
+        const data = event.data;
+        if (!data || typeof data !== 'object') return;
+        if (data.slug !== slug) return;
+
+        if (data.type === 'game:save') {
+          try {
+            localStorage.setItem(key(data.key), JSON.stringify(data.value));
+          } catch (e) {}
+        }
+
+        if (data.type === 'game:load') {
+          let value = null;
+          try {
+            const raw = localStorage.getItem(key(data.key));
+            if (raw !== null) value = JSON.parse(raw);
+          } catch (e) {}
+          event.source?.postMessage(
+            { type: 'game:loaded', slug, key: data.key, value },
+            '*'
+          );
+        }
+
+        if (data.type === 'game:exit') {
+          location.href = '/games';
+        }
+      });
+
+      document.getElementById('fs')?.addEventListener('click', () => {
+        const el = document.getElementById('stage');
+        if (!document.fullscreenElement) el?.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      });
+    })();
+  </script>
+</BareLayout>

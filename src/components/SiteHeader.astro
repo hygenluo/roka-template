@@ -1,0 +1,12 @@
+---
+import { site, isActive } from '../lib/site';
+
+const path = Astro.url.pathname;
+const current = site.nav.find((item) => isActive(item.href, path));
+const section = current?.label ?? '首页';
+---
+
+<header class="site-header">
+  <div class="site-header__section">{section}</div>
+  <div class="site-header__meta" aria-hidden="true">{site.tagline}</div>
+</header>

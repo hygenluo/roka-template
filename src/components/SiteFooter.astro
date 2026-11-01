@@ -1,0 +1,20 @@
+---
+import { site } from '../lib/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div>
+    © {year} {site.author.name} · 内容与代码各自独立成仓库
+  </div>
+  <nav aria-label="页脚链接">
+    {
+      site.social.map((item) => (
+        <a href={item.href} rel="noopener noreferrer" target={item.href.startsWith('http') ? '_blank' : undefined}>
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+</footer>

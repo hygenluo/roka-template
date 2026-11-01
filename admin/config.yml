@@ -1,0 +1,231 @@
+# Decap CMS 配置模板
+# 占位符由 scripts/sync-admin-config.mjs 在构建时替换，产物写到 public/admin/config.yml
+# 模板仓库里不出现任何本站信息。
+
+backend:
+  name: github
+  repo: __CONTENT_REPO__
+  branch: __CONTENT_BRANCH__
+  base_url: __AUTH_BASE_URL__
+  auth_endpoint: auth
+
+# 媒体写进内容仓库，路径与 Astro 同步脚本约定一致
+media_folder: uploads/{{year}}/{{month}}
+public_folder: /uploads/{{year}}/{{month}}
+
+site_url: __SITE_URL__
+display_url: __SITE_URL__
+logo_url: /favicon.svg
+
+locale: zh_Hans
+publish_mode: simple
+editor:
+  preview: false
+
+collections:
+  - name: blog
+    label: 教程
+    label_singular: 一篇教程
+    folder: blog
+    create: true
+    format: frontmatter
+    summary: '{{title}} — {{pubDate}}'
+    sortable_fields: [pubDate, title]
+    fields:
+      - { name: title, label: 标题, widget: string }
+      - { name: description, label: 摘要, widget: text }
+      - { name: pubDate, label: 发布日, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: updatedDate, label: 更新日, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, required: false }
+      - { name: series, label: 系列, widget: string, required: false, hint: 同一系列填同一个名字 }
+      - { name: seriesOrder, label: 系列内序号, widget: number, required: false, value_type: int }
+      - { name: tags, label: 标签, widget: list, required: false, default: [] }
+      - { name: cover, label: 封面, widget: image, required: false }
+      - name: difficulty
+        label: 难度
+        widget: select
+        required: false
+        options: [入门, 进阶, 深入]
+      - { name: draft, label: 草稿, widget: boolean, default: false }
+      - { name: body, label: 正文, widget: markdown }
+
+  - name: notes
+    label: 随笔
+    label_singular: 一条随笔
+    folder: notes
+    create: true
+    format: frontmatter
+    summary: '{{date}} — {{title}}'
+    sortable_fields: [date, title]
+    fields:
+      - { name: date, label: 日期, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: title, label: 标题, widget: string, required: false, hint: 可不填，列表里用日期当标题 }
+      - name: kind
+        label: 类型
+        widget: select
+        options:
+          - { label: 日常, value: life }
+          - { label: 读书, value: book }
+          - { label: 游戏, value: game }
+          - { label: 影视, value: film }
+          - { label: 学习, value: study }
+      - { name: rating, label: 评分, widget: number, required: false, min: 1, max: 5, value_type: int }
+      - name: related
+        label: 关联作品
+        widget: object
+        required: false
+        fields:
+          - { name: type, label: 类型, widget: select, options: [book, game, film] }
+          - { name: title, label: 作品名, widget: string }
+          - { name: creator, label: 作者/厂商, widget: string, required: false }
+          - { name: url, label: 链接, widget: string, required: false }
+      - { name: mood, label: 心情, widget: string, required: false }
+      - { name: tags, label: 标签, widget: list, required: false, default: [] }
+      - { name: body, label: 正文, widget: markdown }
+
+  - name: projects
+    label: 项目
+    label_singular: 一个项目
+    folder: projects
+    create: true
+    format: frontmatter
+    summary: '{{title}} — {{status}}'
+    sortable_fields: [order, year, title]
+    fields:
+      - { name: title, label: 名称, widget: string }
+      - { name: summary, label: 一句话, widget: text }
+      - { name: year, label: 年份, widget: number, value_type: int }
+      - name: status
+        label: 状态
+        widget: select
+        options: [进行中, 已完成, 归档, 弃坑]
+      - name: type
+        label: 类型
+        widget: select
+        options:
+          - { label: 站内项目, value: in-site }
+          - { label: 外链项目, value: external }
+      - { name: stack, label: 技术栈, widget: list, required: false, default: [] }
+      - { name: cover, label: 封面, widget: image, required: false }
+      - { name: featured, label: 首页精选, widget: boolean, default: false }
+      - { name: order, label: 排序, widget: number, default: 100, value_type: int, hint: 越小越靠前 }
+      - name: links
+        label: 链接
+        widget: object
+        required: false
+        fields:
+          - { name: demo, label: 演示地址, widget: string, required: false }
+          - { name: repo, label: 仓库地址, widget: string, required: false }
+          - name: download
+            label: 下载 / 网盘
+            widget: object
+            required: false
+            fields:
+              - name: provider
+                label: 网盘
+                widget: select
+                options: [baidu, aliyun, quark, gdrive, other]
+              - { name: url, label: 链接, widget: string }
+              - { name: code, label: 提取码, widget: string, required: false }
+      - { name: lastChecked, label: 外链最后校验日, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, required: false }
+      - { name: body, label: 正文, widget: markdown }
+
+  - name: games
+    label: 小游戏
+    label_singular: 一个小游戏
+    folder: games
+    create: true
+    format: frontmatter
+    summary: '{{title}} — {{status}}'
+    sortable_fields: [title]
+    fields:
+      - { name: title, label: 名字, widget: string }
+      - { name: summary, label: 一句话, widget: text }
+      - { name: entry, label: 入口路径, widget: string, hint: 如 /games/snake/index.html；上传的单文件游戏填媒体库给出的路径 }
+      - name: upload
+        label: 上传单文件游戏（可选）
+        widget: file
+        required: false
+        hint: 传 .html 单文件。上传后把上面「入口路径」改成这里给出的路径。
+      - { name: cover, label: 封面, widget: image, required: false }
+      - { name: controls, label: 操作说明, widget: string, hint: 一句话，如「方向键转向，空格暂停」 }
+      - name: orientation
+        label: 屏幕方向
+        widget: select
+        required: false
+        default: any
+        options: [any, landscape]
+      - name: sandbox
+        label: 沙箱
+        widget: select
+        default: strict
+        hint: 自己写的选 trusted；上传来的第三方 HTML 必须留 strict
+        options:
+          - { label: strict（无同源权限，推荐） , value: strict }
+          - { label: trusted（允许同源） , value: trusted }
+      - name: status
+        label: 状态
+        widget: select
+        options: [可玩, 开发中, 搁置]
+      - { name: body, label: 说明, widget: markdown, required: false }
+
+  - name: site
+    label: 站点设置
+    files:
+      - name: site
+        label: 站点信息
+        file: site.json
+        fields:
+          - { name: title, label: 站名, widget: string }
+          - { name: tagline, label: 副标题, widget: string }
+          - { name: description, label: 描述, widget: text }
+          - { name: url, label: 站点地址, widget: string, hint: 含 https://，RSS 与 canonical 都用它 }
+          - name: author
+            label: 作者
+            widget: object
+            fields:
+              - { name: name, label: 名字, widget: string }
+              - { name: bio, label: 一句话简介, widget: string }
+              - { name: avatar, label: 头像, widget: image, required: false }
+          - { name: about, label: 关于页正文, widget: list, required: false, hint: 每个列表项是一段 }
+          - name: nav
+            label: 导航
+            widget: list
+            fields:
+              - { name: label, label: 文字, widget: string }
+              - { name: href, label: 链接, widget: string }
+          - name: social
+            label: 社交链接
+            widget: list
+            fields:
+              - { name: label, label: 文字, widget: string }
+              - { name: href, label: 链接, widget: string }
+          - { name: templateVersion, label: 模板版本, widget: number, value_type: int }
+
+      - name: theme
+        label: 风格档位
+        file: theme.json
+        fields:
+          - name: accent
+            label: 强调色
+            widget: select
+            options: [marker, jade, indigo, clay, moss, plum]
+          - name: ink
+            label: 墨色
+            widget: select
+            options: [graphite, navy]
+          - name: serif
+            label: 正文衬线
+            widget: select
+            options: [noto-serif, source-serif]
+          - name: width
+            label: 版心宽度
+            widget: select
+            options: ['64', '68', '72']
+          - name: darkDefault
+            label: 默认明暗
+            widget: select
+            options: [auto, 'true', 'false']
+          - name: radius
+            label: 圆角
+            widget: select
+            options: ['0', '2', '6']
