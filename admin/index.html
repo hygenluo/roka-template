@@ -12,10 +12,22 @@
     <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml" />
     <style>
       html, body { height: 100%; margin: 0; }
-      body { font: 14px/1.6 system-ui, sans-serif; background: #f5f6f3; color: #15181b;
-             display: grid; place-items: center; }
-      .boot { text-align: center; color: #62676b; }
-      .boot b { display: block; color: #15181b; font-weight: 500; margin-bottom: 4px; }
+
+      /* 加载态：把占位文案居中 */
+      body {
+        font: 14px/1.6 system-ui, sans-serif;
+        background: #f8f5ed;
+        color: #2b2833;
+        display: grid;
+        place-items: center;
+      }
+
+      .boot { text-align: center; color: #6b6575; }
+      .boot b { display: block; color: #2b2833; font-weight: 500; margin-bottom: 4px; }
+
+      /* 编辑器接管后：让出整页，撤掉加载态 */
+      body.cms-ready { display: block; }
+      body.cms-ready .boot { display: none; }
     </style>
   </head>
   <body data-pagefind-ignore>
@@ -27,29 +39,43 @@
     <!-- Decap CMS 自托管：不走任何外部 CDN，国内也能直接打开 -->
     <script src="/admin/vendor/decap-cms.js"></script>
     <script>
-      // 保存后给一句实话：构建要时间，不是没存上
-      document.addEventListener('DOMContentLoaded', () => {
-        if (!window.CMS) {
-          document.querySelector('.boot').innerHTML =
-            '<b>编辑器没加载出来</b>vendor/decap-cms.js 缺失，重新构建一次';
-          return;
+      (() => {
+        // Decap 一挂载就撤掉加载态，把整页交还给它
+        const boot = document.querySelector('.boot');
+
+        function handover() {
+          document.body.classList.add('cms-ready');
+          boot?.remove();
         }
-        window.CMS.registerEventListener({
-          name: 'postSave',
-          handler: ({ entry }) => {
-            const slug = entry?.get?.('slug') || '';
-            console.info('[decap] 已提交到内容仓库', slug);
-            // 保存 ≠ 上线：给一个明确的等待提示
-            const tip = document.createElement('div');
-            tip.textContent = '已提交到内容仓库，约 1–2 分钟后线上生效';
-            tip.style.cssText =
-              'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);' +
-              'background:#15181b;color:#f5f6f3;padding:8px 16px;font-size:13px;z-index:9999';
-            document.body.appendChild(tip);
-            setTimeout(() => tip.remove(), 6000);
-          },
+
+        // 保存后给一句实话：构建要时间，不是没存上
+        function afterSave() {
+          const tip = document.createElement('div');
+          tip.textContent = '已提交到内容仓库，约 1–2 分钟后线上生效';
+          tip.style.cssText =
+            'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);' +
+            'background:#2b2833;color:#f8f5ed;padding:8px 16px;font-size:13px;z-index:9999';
+          document.body.appendChild(tip);
+          setTimeout(() => tip.remove(), 6000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+          if (!window.CMS) {
+            if (boot) {
+              boot.innerHTML = '<b>编辑器没加载出来</b>vendor/decap-cms.js 缺失，重新构建一次';
+            }
+            return;
+          }
+          handover();
+          window.CMS.registerEventListener({
+            name: 'postSave',
+            handler: ({ entry }) => {
+              console.info('[decap] 已提交到内容仓库', entry?.get?.('slug') || '');
+              afterSave();
+            },
+          });
         });
-      });
+      })();
     </script>
   </body>
 </html>
