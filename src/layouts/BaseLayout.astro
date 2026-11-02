@@ -26,7 +26,9 @@ interface Props {
 const { title, description = site.description, stamp } = Astro.props;
 
 const pageTitle = title ? `${title} · ${site.title}` : `${site.title} — ${site.tagline}`;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+// 规范化 canonical：去掉尾斜杠，和 trailingSlash: 'never' + drop-trailing-slash 对齐
+const canonicalPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const canonical = new URL(canonicalPath, Astro.site).href;
 ---
 
 <!doctype html>

@@ -15,6 +15,9 @@ if (existsSync(siteFile)) {
 
 export default defineConfig({
   site,
+  // 站内链接统一不带尾斜杠；配合 Workers 的 drop-trailing-slash，
+  // 每次导航少一次 307 跳转（在国内网络下这个来回是有代价的）
+  trailingSlash: 'never',
   build: {
     inlineStylesheets: 'auto',
   },
