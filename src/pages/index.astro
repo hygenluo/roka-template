@@ -17,7 +17,7 @@ const latestGames = games.filter((g) => g.data.status === '可玩').slice(0, 2);
 
 <BaseLayout>
   <section class="hero">
-    <h1>{site.title}</h1>
+    <h1>{site.title.split('').map((ch, i) => <span class="ch" style={`--i:${i}`}>{ch}</span>)}</h1>
     <p>{site.description}</p>
     <div class="hero__facts">
       <span>教程 {posts.length}</span>

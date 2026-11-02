@@ -2,6 +2,7 @@
 import '../styles/fonts.css';
 import '../styles/site.css';
 import '../styles/type.css';
+import '../styles/anime.css';
 
 import Rail from '../components/Rail.astro';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -13,9 +14,11 @@ interface Props {
   title?: string;
   description?: string;
   stamp?: string;
+  /** 只在长文页显示顶部阅读进度 */
+  progress?: boolean;
 }
 
-const { title, description = site.description, stamp } = Astro.props;
+const { title, description = site.description, stamp, progress = false } = Astro.props;
 
 const pageTitle = title ? `${title} · ${site.title}` : `${site.title} — ${site.tagline}`;
 // 规范化 canonical：去掉尾斜杠，和 trailingSlash: 'never' + drop-trailing-slash 对齐
@@ -45,6 +48,11 @@ const canonical = new URL(canonicalPath, Astro.site).href;
 
   <body>
     <a class="sr-only" href="#main">跳到正文</a>
+    <div class="fluff" aria-hidden="true">
+      {Array.from({ length: 10 }).map(() => <i />)}
+    </div>
+    {progress && <div class="progress" aria-hidden="true"></div>}
+
     <div class="shell">
       <Rail stamp={stamp} />
 

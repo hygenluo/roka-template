@@ -1,0 +1,431 @@
+/* ============================================================
+   二次元皮肤 · 动画电影标题卡
+
+   不是"粉紫渐变 + 玻璃圆角"（那是 AI 对二次元的默认答案），
+   而是：天空光、网点纸、对话框、风吹芦花。
+
+   这一层只做加法：覆盖颜色 token、加装饰装置、加动效。
+   基础排版仍在 site.css / type.css 里。
+   站名等本站信息一律来自 site.json，不要写死在这里。
+   ============================================================ */
+
+:root {
+  /* 芦花白为纸，天空蓝为光，暮紫为强调 */
+  --sky: #6fa8ce;
+  --sky-soft: #dcebf4;
+  --paper: #f8f5ed;
+  --paper-deep: #f0eadc;
+  --paper-sunk: #e8e1d1;
+  --ink-soft: #6b6575;
+  --ink-faint: #a49eac;
+  --rule: #ded6c4;
+  --rule-strong: #c4b79e;
+  --reed: #c9b48e;
+  --dusk: #8a76b4;
+  --link: #3d7fa6;
+  --mark: var(--theme-accent, #f4da6b);
+}
+
+[data-theme="dark"] {
+  --sky: #5b93bb;
+  --sky-soft: #1d2836;
+  --paper: #1a1922;
+  --paper-deep: #131220;
+  --paper-sunk: #24222e;
+  --ink-soft: #a49cb2;
+  --ink-faint: #6f6880;
+  --rule: #302d3d;
+  --rule-strong: #453f57;
+  --reed: #8f7f63;
+  --dusk: #a48ed6;
+  --link: #8cc3e6;
+}
+
+/* 天光：从顶部透下来的一层光 */
+body {
+  background-image: radial-gradient(
+    120% 55% at 50% 0%,
+    color-mix(in srgb, var(--sky) 16%, transparent),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* ---------- 动效基元 ---------- */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes flutter {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(22px, -34px, 0) rotate(160deg);
+  }
+  88% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate3d(-6px, -78px, 0) rotate(340deg);
+    opacity: 0;
+  }
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------- 首屏：标题卡 ---------- */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  padding-top: var(--s5);
+}
+
+/* 网点纸（漫画打底），只在首屏出现，向下淡出 */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -24px -8vw 0;
+  z-index: -1;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--ink) 22%, transparent) 1px,
+    transparent 1.2px
+  );
+  background-size: 8px 8px;
+  opacity: 0.42;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
+  pointer-events: none;
+}
+
+.hero h1 {
+  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  text-shadow:
+    0.04em 0.05em 0 color-mix(in srgb, var(--sky) 45%, transparent),
+    0.08em 0.1em 0 color-mix(in srgb, var(--reed) 40%, transparent);
+}
+
+/* 首页标题逐字入场 */
+.hero h1 .ch {
+  display: inline-block;
+  animation: rise 0.62s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 80ms);
+}
+
+/* 副标题做成对话框（视觉小说那味儿），且承担真实职责：放简介 */
+.hero p {
+  position: relative;
+  padding: 14px 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  color: var(--ink-soft);
+  text-align: left;
+  line-height: 1.9;
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--reed) 70%, transparent);
+  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) 0.25s both;
+  margin-top: 0.35em;
+}
+
+.hero p::after {
+  content: "";
+  position: absolute;
+  left: 26px;
+  bottom: -7px;
+  width: 12px;
+  height: 12px;
+  background: var(--paper);
+  border-right: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+  transform: rotate(45deg);
+}
+
+.hero__facts {
+  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) 0.4s both;
+}
+
+/* ---------- 列表入场：错峰，但克制 ---------- */
+
+.section {
+  animation: rise 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.section:nth-of-type(2) {
+  animation-delay: 0.1s;
+}
+
+.section:nth-of-type(3) {
+  animation-delay: 0.18s;
+}
+
+.entry,
+.note,
+.proj {
+  animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.entry:nth-child(1),
+.note:nth-child(1),
+.proj:nth-child(1) {
+  animation-delay: 0.24s;
+}
+
+.entry:nth-child(2),
+.note:nth-child(2),
+.proj:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.entry:nth-child(3),
+.note:nth-child(3),
+.proj:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+.entry:nth-child(n + 4),
+.note:nth-child(n + 4),
+.proj:nth-child(n + 4) {
+  animation-delay: 0.42s;
+}
+
+/* ---------- 分镜框：项目行 ---------- */
+
+.proj {
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  padding: var(--s3) var(--s4);
+  margin-bottom: var(--s3);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  box-shadow: 5px 5px 0 color-mix(in srgb, var(--reed) 60%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.proj:last-child {
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.proj:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 color-mix(in srgb, var(--reed) 70%, transparent);
+}
+
+/* ---------- 芦花：飘浮的絮 ---------- */
+
+.fluff {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.fluff i {
+  position: absolute;
+  bottom: -10vh;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--paper) 70%, var(--reed));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--reed) 45%, transparent);
+  animation: flutter linear infinite;
+  opacity: 0;
+}
+
+.fluff i:nth-child(1) {
+  left: 8%;
+  animation-duration: 26s;
+  animation-delay: 0s;
+  width: 5px;
+  height: 5px;
+}
+.fluff i:nth-child(2) {
+  left: 19%;
+  animation-duration: 33s;
+  animation-delay: 4s;
+}
+.fluff i:nth-child(3) {
+  left: 31%;
+  animation-duration: 29s;
+  animation-delay: 9s;
+  width: 4px;
+  height: 4px;
+}
+.fluff i:nth-child(4) {
+  left: 42%;
+  animation-duration: 37s;
+  animation-delay: 2s;
+}
+.fluff i:nth-child(5) {
+  left: 54%;
+  animation-duration: 31s;
+  animation-delay: 12s;
+  width: 7px;
+  height: 7px;
+}
+.fluff i:nth-child(6) {
+  left: 63%;
+  animation-duration: 28s;
+  animation-delay: 6s;
+}
+.fluff i:nth-child(7) {
+  left: 72%;
+  animation-duration: 35s;
+  animation-delay: 15s;
+  width: 4px;
+  height: 4px;
+}
+.fluff i:nth-child(8) {
+  left: 81%;
+  animation-duration: 30s;
+  animation-delay: 3s;
+}
+.fluff i:nth-child(9) {
+  left: 88%;
+  animation-duration: 39s;
+  animation-delay: 18s;
+  width: 5px;
+  height: 5px;
+}
+.fluff i:nth-child(10) {
+  left: 95%;
+  animation-duration: 27s;
+  animation-delay: 8s;
+}
+
+/* ---------- 阅读进度：滚动驱动，不写 JS ---------- */
+
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--sky), var(--dusk));
+  z-index: 30;
+  animation: grow-bar linear both;
+  animation-timeline: scroll(root);
+}
+
+/* ---------- 索引栏：呼应外观 ---------- */
+
+.rail {
+  background: color-mix(in srgb, var(--paper-deep) 88%, var(--sky-soft));
+}
+
+.rail__brand {
+  color: var(--ink);
+  text-shadow: 0.06em 0.06em 0 color-mix(in srgb, var(--reed) 60%, transparent);
+}
+
+.rail__mark[aria-current="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 2px;
+}
+
+/* ---------- 段落标题：加一道手绘感的短线 ---------- */
+
+.prose h2 {
+  position: relative;
+  padding-left: 0.72em;
+}
+
+.prose h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  bottom: 0.18em;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--sky), var(--dusk));
+}
+
+/* 分区的方块标：像番剧的分集序号 */
+.section__head h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section__head h2::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--sky);
+  border: 1.5px solid var(--ink);
+  flex: none;
+}
+
+/* 悬停：整个条目像一张被拿起来的纸 */
+.entry,
+.note {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.entry:hover,
+.note:hover {
+  transform: translateX(3px);
+  box-shadow: inset 3px 0 0 var(--sky);
+}
+
+/* 索引栏：下划线扫过 */
+.rail__mark {
+  background-image: linear-gradient(var(--sky), var(--sky));
+  background-repeat: no-repeat;
+  background-size: 0% 2px;
+  background-position: 0 100%;
+  transition: background-size 0.22s ease, color 0.18s ease;
+}
+
+.rail__mark:hover {
+  background-size: 100% 2px;
+}
+
+.rail__mark[aria-current="true"] {
+  background-image: none;
+}
+
+/* ---------- 尊重系统设置 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .fluff,
+  .progress {
+    display: none;
+  }
+
+  .hero h1,
+  .hero h1 .ch,
+  .hero p,
+  .hero__facts,
+  .section,
+  .entry,
+  .note,
+  .proj {
+    animation: none;
+  }
+}
