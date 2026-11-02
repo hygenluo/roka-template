@@ -1,12 +1,32 @@
 ---
+/**
+ * 面包屑。
+ *
+ * 首页不显示——那里一进去就是大标题，再挂一个"首页"只是噪音。
+ * 内页显示「站名 / 分区」，站名可点回首页，分区是当前位置（不可点）。
+ * 桌面端由左侧索引栏承担导航，这里只做"我在哪一层"的确认。
+ */
 import { site, isActive } from '../lib/site';
 
-const path = Astro.url.pathname;
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isHome = path === '/';
 const current = site.nav.find((item) => isActive(item.href, path));
-const section = current?.label ?? '首页';
 ---
 
-<header class="site-header">
-  <div class="site-header__section">{section}</div>
-  <div class="site-header__meta" aria-hidden="true">{site.tagline}</div>
-</header>
+{
+  !isHome && (
+    <header class="site-header">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <a class="breadcrumb__home" href="/">
+          {site.title}
+        </a>
+        <span class="breadcrumb__sep" aria-hidden="true">
+          /
+        </span>
+        <span class="breadcrumb__here" aria-current="page">
+          {current?.label ?? ''}
+        </span>
+      </nav>
+    </header>
+  )
+}
