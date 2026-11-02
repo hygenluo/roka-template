@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title>内容管理</title>
+    <!--
+      路径必须写绝对路径。站点启用了 drop-trailing-slash，页面地址是 /admin（没有尾斜杠），
+      相对路径 ./vendor/x.js 会被解析成 /vendor/x.js，直接 404。
+    -->
+    <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml" />
     <style>
       html, body { height: 100%; margin: 0; }
       body { font: 14px/1.6 system-ui, sans-serif; background: #f5f6f3; color: #15181b;
@@ -20,7 +25,7 @@
     </div>
 
     <!-- Decap CMS 自托管：不走任何外部 CDN，国内也能直接打开 -->
-    <script src="./vendor/decap-cms.js"></script>
+    <script src="/admin/vendor/decap-cms.js"></script>
     <script>
       // 保存后给一句实话：构建要时间，不是没存上
       document.addEventListener('DOMContentLoaded', () => {
