@@ -1,0 +1,33 @@
+/* 由 scripts/build-fonts.mjs 生成，请勿手改。改字号/字重请改 FACES 列表后重跑 pnpm fonts:build */
+
+@font-face {
+  font-family: "Noto Serif SC";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/noto-serif-sc-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Serif SC";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/noto-serif-sc-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans SC";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/noto-sans-sc-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans SC";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/noto-sans-sc-500.woff2") format("woff2");
+}

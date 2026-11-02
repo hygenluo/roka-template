@@ -147,9 +147,31 @@ pnpm preview:worker  # wrangler 本地起服务，路由行为与线上一致
 版心宽度、强调色、墨色、衬线、圆角、默认明暗——**只能选档位，不能写样式**。
 一旦允许内容侧写 CSS，模板升级和内容变更就永久互相污染。
 
+## 字体：按实际用字子集化
+
+中文不加载整包字体。`scripts/build-fonts.mjs` 会扫描 `content/` 和 `src/` 里出现的所有字符，
+用 `pyftsubset` 生成只含这些字形的 woff2：
+
+| | 之前（fontsource 切片） | 现在（子集化） |
+|---|---|---|
+| 中文字体文件 | 404 个 / 24 MB | **4 个 / 486 KB** |
+| 整站产物 | 822 文件 / 25.3 MB | **91 文件 / 1.7 MB** |
+| CSS | 490 KB | 22 KB |
+
+产物（`public/fonts/*.woff2` + `src/styles/fonts-cjk.css` + `src/fonts/subset-chars.txt`）**提交进仓库**，
+构建时不做子集化——Cloudflare 构建镜像里没有 fonttools，也不该每次下载 40MB 源字体。
+
+**内容里出现新字之后要手动跑一次：**
+
+```bash
+pnpm fonts:build
+```
+
+不跑也不会炸：`check-fonts.mjs` 会在构建日志里列出哪些字没覆盖（它们会回退到系统字体，看着会不太对）。
+源字体缓存在 `.fonts-cache/`（已 gitignore）。
+
 ## 已知取舍
 
-- 中文字体走 fontsource 的 unicode-range 切片，产物里约 800 个字体文件 / 25MB（`.woff` 是给老浏览器的，
-  现代浏览器不会下载）。要瘦身可以在构建期用 `pyftsubset` 按实际用字子集化。
+- 字体子集是**内容驱动**的，所以改完内容要记得 `pnpm fonts:build`，见上一节。
 - 每次构建多一次内容仓库浅克隆。
 - 小游戏包上限 5MB，图片上限 2MB，超了构建直接失败——大文件放网盘外链。
