@@ -1,7 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "roka",
-  "compatibility_date": "2026-11-01",
+  // 兼容日期取一个"比本地 workerd 新、但已经稳定"的日期：
+  // 太新会让 `wrangler dev` 起不来（本地 workerd 落后于线上）。
+  "compatibility_date": "2026-10-01",
 
   // 纯静态站点：没有 Worker 脚本，请求直接命中资源，
   // 静态资源请求不计费、不限量（见 README 的「部署」一节）。

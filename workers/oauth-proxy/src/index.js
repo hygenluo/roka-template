@@ -36,13 +36,16 @@ export default {
       authorize.searchParams.set('scope', 'repo');
       authorize.searchParams.set('state', state);
 
-      const res = Response.redirect(authorize.href, 302);
-      // state 存在 Cookie 里，回来时对一下，防止 CSRF
-      res.headers.append(
-        'Set-Cookie',
-        `decap_state=${state}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`
-      );
-      return res;
+      // 注意：不能用 Response.redirect() —— 它的 headers 是不可变的，
+      // 后面 append Set-Cookie 会直接抛 TypeError（线上表现为 500）。
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: authorize.href,
+          // state 存 Cookie，回跳时比对，防 CSRF
+          'Set-Cookie': `decap_state=${state}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`,
+        },
+      });
     }
 
     if (url.pathname === '/callback') {
