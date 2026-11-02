@@ -150,7 +150,15 @@ pnpm preview:worker  # wrangler 本地起服务，路由行为与线上一致
 
 ## 视觉系统
 
-设计 token 在 `src/styles/global.css`，档位由内容仓库的 `theme.json` 选择（6 个键，多一个键构建失败）。
+样式分三层，纯 CSS，没有 UI 框架：
+
+| 文件 | 职责 |
+|---|---|
+| `src/styles/site.css` | token（纸/墨/字号阶梯/间距阶梯）+ 布局与组件 |
+| `src/styles/type.css` | 正文排版：教程用宋体，随笔用文楷 |
+| `src/styles/anime.css` | 二次元皮肤：天空光、网点纸、对话框、飘浮芦花、动效 |
+
+档位由内容仓库的 `theme.json` 选择（6 个键，多一个键构建失败）。
 版心宽度、强调色、墨色、衬线、圆角、默认明暗——**只能选档位，不能写样式**。
 一旦允许内容侧写 CSS，模板升级和内容变更就永久互相污染。
 
