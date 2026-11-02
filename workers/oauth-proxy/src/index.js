@@ -71,7 +71,8 @@ export default {
       const data = await tokenRes.json();
       if (!data.access_token) return html('换取 token 失败，请重试', 400);
 
-      // 只放行指定账号 —— 单作者站点，别留任何后门
+      // 只放行指定账号 —— 单作者站点，别留任何后门。
+      // GitHub 返回的 login 是小写，这里统一转小写比较，避免 HygenLuo / hygenluo 对不上。
       if (env.ALLOWED_LOGIN) {
         const me = await fetch('https://api.github.com/user', {
           headers: {
@@ -79,8 +80,11 @@ export default {
             'User-Agent': 'decap-oauth-proxy',
           },
         }).then((r) => r.json());
-        if (me.login !== env.ALLOWED_LOGIN) {
-          return html(`账号 ${me.login} 不在白名单内`, 403);
+
+        const actual = String(me.login || '').toLowerCase();
+        const allowed = env.ALLOWED_LOGIN.trim().toLowerCase();
+        if (actual !== allowed) {
+          return html(`账号 ${me.login} 不在白名单内（期望 ${env.ALLOWED_LOGIN}）`, 403);
         }
       }
 
