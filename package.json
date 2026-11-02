@@ -8,6 +8,8 @@
     "dev": "node scripts/prepare.mjs --dev && astro dev",
     "build": "node scripts/prepare.mjs && astro build && pagefind --site dist",
     "preview": "astro preview",
+    "preview:worker": "wrangler dev",
+    "deploy": "wrangler deploy",
     "check:boundary": "node scripts/check-boundary.mjs",
     "verify": "node scripts/prepare.mjs && astro build && pagefind --site dist"
   },
@@ -20,6 +22,7 @@
     "sharp": "^0.35.5"
   },
   "devDependencies": {
-    "pagefind": "^1.6.0"
+    "pagefind": "^1.6.0",
+    "wrangler": "^4.156.0"
   }
 }

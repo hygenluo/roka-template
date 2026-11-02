@@ -11,6 +11,9 @@ dist/
 .astro/
 node_modules/
 
+# Wrangler（本地预览产物）
+.wrangler/
+
 # 环境
 .env
 .env.local

@@ -10,7 +10,7 @@
  *   GITHUB_CLIENT_ID
  *   GITHUB_CLIENT_SECRET
  * 环境变量（普通变量）：
- *   SITE_URL   例如 https://your-site.pages.dev
+ *   SITE_URL   例如 https://roka.<你的子域>.workers.dev
  *   ALLOWED_LOGIN  只放行这个 GitHub 用户名
  */
 

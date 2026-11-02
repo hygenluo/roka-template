@@ -4,5 +4,5 @@ compatibility_date = "2026-10-01"
 
 # 普通变量放这里；GitHub 的 Client ID / Secret 用 wrangler secret put 设置
 [vars]
-SITE_URL = "https://your-site.pages.dev"
+SITE_URL = "https://roka.<你的子域>.workers.dev"
 ALLOWED_LOGIN = "your-github-username"

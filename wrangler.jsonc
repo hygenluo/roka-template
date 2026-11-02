@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "roka",
+  "compatibility_date": "2026-11-01",
+
+  // 纯静态站点：没有 Worker 脚本，请求直接命中资源，
+  // 静态资源请求不计费、不限量（见 README 的「部署」一节）。
+  "assets": {
+    "directory": "./dist/",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

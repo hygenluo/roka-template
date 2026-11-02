@@ -61,12 +61,26 @@ pnpm verify   # 同上，CI 和部署用这个
 | `CONTENT_BRANCH` | 默认 `main` |
 | `OAUTH_BASE_URL` | OAuth 中转的地址，`/admin` 登录用 |
 
-## 部署（Cloudflare Pages）
+## 部署（Cloudflare Workers，新版流程）
 
-1. Pages 连接**这个仓库**，构建命令 `pnpm build`，输出目录 `dist`。
-2. 环境变量填上表里那几项。
-3. 在 Pages 设置里建一个 **Deploy Hook**，把 URL 存进内容仓库的 secret `DEPLOY_HOOK_URL`。
-   之后内容仓库一 push，`notify.yml` 就会叫 Pages 重建。
+静态资源不再走 Pages，走 **Workers Static Assets**。配置在 `wrangler.jsonc`：
+
+| 字段 | 值 | 作用 |
+|---|---|---|
+| `assets.directory` | `./dist/` | 构建产物目录 |
+| `not_found_handling` | `404-page` | 未命中时返回 `dist/404.html` |
+| `html_handling` | `auto-trailing-slash` | 与 canonical（`/blog/` 带斜杠）一致 |
+
+**没有 Worker 脚本**：纯静态站，请求直接命中资源。静态资源请求免费且不限量，只有命中 Worker 脚本的请求才计费。
+
+### 首次部署
+
+1. Cloudflare → **Workers & Pages → Create → Continue with GitHub → 选 `roka-template`**
+2. 构建设置：**Build command** `pnpm build`，**Deploy command** `npx wrangler deploy`（默认值，确认即可）
+3. **Build Variables and Secrets** 填上那 4 个内容仓库相关变量（+ 私有仓库的 token，见下）
+4. Deploy
+
+构建镜像默认 Node **24.22.1** / pnpm **9.10**，与 lockfile 同大版本，不用额外指定版本。
 
 ### ⚠️ 内容仓库是私有的，部署必须多一项
 
@@ -77,11 +91,25 @@ pnpm verify   # 同上，CI 和部署用这个
 - Permissions：**Contents = Read-only**（其余全留 No access）
 - 有效期按需，到期前记得换
 
-然后把这个 token 作为 Pages 的环境变量 **`CONTENT_REPO_TOKEN`**（加密变量，不要写进仓库）。
+然后把这个 token 作为构建变量 **`CONTENT_REPO_TOKEN`**（Secret，不要写进仓库）。
 `pull-content.mjs` 会把它拼进 clone URL，用完即弃。
 
-**为何不用 git submodule**：Pages 的构建环境不会自动 `git submodule update --init`，
-且 submodule 的内容更新不会让父仓库的构建自动触发——"推了但没生效"是最难查的 bug。
+### 内容更新后自动重建
+
+Workers Builds 同样支持 Deploy Hooks：
+**Settings → Builds → Deploy Hooks → 建一个指向 `main` 的 hook**，把 URL 存进内容仓库的 secret `DEPLOY_HOOK_URL`。
+`notify.yml` 会在每次 push 后 `curl -X POST` 它（同一 hook 短时间内重复触发不会产生重复构建）。
+
+### 手动部署（可选）
+
+```bash
+pnpm build
+pnpm deploy          # wrangler deploy
+pnpm preview:worker  # wrangler 本地起服务，路由行为与线上一致
+```
+
+**为何不用 git submodule**：构建镜像不会自动 `git submodule update --init`，
+且 submodule 的内容更新不会触发父仓库构建——"推了但没生效"是最难查的 bug。
 
 ## 站内编辑
 

@@ -3,7 +3,7 @@
  *
  * 三条路径，跑的是同一份结果：
  *   1. 本地并排放着 ../roka-content  → 复制过来（日常开发）
- *   2. 配置了 CONTENT_REPO_URL        → 浅克隆（CI / Cloudflare Pages）
+ *   2. 配置了 CONTENT_REPO_URL        → 浅克隆（CI / Workers Builds）
  *   3. 上一轮已经搬过               → 直接复用
  *
  * 刻意不用 git submodule：CI 不会自动初始化，且 detached HEAD 让
