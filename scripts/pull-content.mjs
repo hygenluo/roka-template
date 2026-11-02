@@ -2,7 +2,7 @@
  * 把内容仓库"搬"到模板仓库的 content/ 下。
  *
  * 三条路径，跑的是同一份结果：
- *   1. 本地并排放着 ../site-content  → 复制过来（日常开发）
+ *   1. 本地并排放着 ../roka-content  → 复制过来（日常开发）
  *   2. 配置了 CONTENT_REPO_URL        → 浅克隆（CI / Cloudflare Pages）
  *   3. 上一轮已经搬过               → 直接复用
  *
@@ -19,7 +19,7 @@ const TARGET = path.join(ROOT, 'content');
 
 const LOCAL = process.env.CONTENT_LOCAL
   ? path.resolve(ROOT, process.env.CONTENT_LOCAL)
-  : path.resolve(ROOT, '..', 'site-content');
+  : path.resolve(ROOT, '..', 'roka-content');
 
 const REPO = process.env.CONTENT_REPO_URL;
 const BRANCH = process.env.CONTENT_BRANCH || 'main';
@@ -68,8 +68,8 @@ if (existsSync(path.join(LOCAL, 'site.json'))) {
   console.error(
     [
       '[pull-content] 找不到内容仓库。三选一：',
-      '  1) 把内容仓库克隆到与本仓库并列的 ../site-content',
-      '  2) 设置环境变量 CONTENT_REPO_URL=https://github.com/you/site-content',
+      '  1) 把内容仓库克隆到与本仓库并列的 ../roka-content',
+      '  2) 设置环境变量 CONTENT_REPO_URL=https://github.com/HygenLuo/roka-content',
       '  3) 设置 CONTENT_LOCAL 指向内容仓库的绝对路径',
     ].join('\n')
   );

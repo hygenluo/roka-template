@@ -1,6 +1,6 @@
-# site-template
+# roka-template
 
-个人站点的**引擎**。内容和它分开住在另一个仓库里（`site-content`）。
+个人站点的**引擎**。内容和它分开住在另一个仓库里（`roka-content`）。
 
 ```
 ├── src/
@@ -39,8 +39,8 @@
 
 ```
 workspace/
-├── site-template/   ← 这个仓库
-└── site-content/    ← 内容仓库
+├── roka-template/   ← 这个仓库
+└── roka-content/    ← 内容仓库
 ```
 
 ```bash
@@ -67,6 +67,18 @@ pnpm verify   # 同上，CI 和部署用这个
 2. 环境变量填上表里那几项。
 3. 在 Pages 设置里建一个 **Deploy Hook**，把 URL 存进内容仓库的 secret `DEPLOY_HOOK_URL`。
    之后内容仓库一 push，`notify.yml` 就会叫 Pages 重建。
+
+### ⚠️ 内容仓库是私有的，部署必须多一项
+
+`CONTENT_REPO_URL` 指向私有仓库时，匿名 clone 会失败（构建日志里是 `could not read Username`）。
+需要在 GitHub 建一个 **fine-grained PAT**：
+
+- Repository access：只选 `roka-content`
+- Permissions：**Contents = Read-only**（其余全留 No access）
+- 有效期按需，到期前记得换
+
+然后把这个 token 作为 Pages 的环境变量 **`CONTENT_REPO_TOKEN`**（加密变量，不要写进仓库）。
+`pull-content.mjs` 会把它拼进 clone URL，用完即弃。
 
 **为何不用 git submodule**：Pages 的构建环境不会自动 `git submodule update --init`，
 且 submodule 的内容更新不会让父仓库的构建自动触发——"推了但没生效"是最难查的 bug。

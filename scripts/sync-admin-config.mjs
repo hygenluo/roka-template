@@ -16,7 +16,7 @@ const site = JSON.parse(
 );
 
 const values = {
-  __CONTENT_REPO__: process.env.CONTENT_REPO_SLUG || 'you/site-content',
+  __CONTENT_REPO__: process.env.CONTENT_REPO_SLUG || 'you/roka-content',
   __CONTENT_BRANCH__: process.env.CONTENT_BRANCH || 'main',
   __AUTH_BASE_URL__: process.env.OAUTH_BASE_URL || 'https://auth.site.invalid',
   __SITE_URL__: site.url,
@@ -24,7 +24,7 @@ const values = {
 };
 
 if (!process.env.CONTENT_REPO_SLUG) {
-  console.warn('[sync-admin] 未设置 CONTENT_REPO_SLUG，/admin 将写入占位仓库 you/site-content');
+  console.warn('[sync-admin] 未设置 CONTENT_REPO_SLUG，/admin 将写入占位仓库 you/roka-content');
 }
 
 mkdirSync(DEST, { recursive: true });

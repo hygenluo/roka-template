@@ -20,7 +20,7 @@ wrangler deploy
 
 ```bash
 OAUTH_BASE_URL=https://decap-oauth.<你的账号>.workers.dev
-CONTENT_REPO_SLUG=<你的账号>/site-content
+CONTENT_REPO_SLUG=<你的账号>/roka-content
 ```
 
 ## 安全说明
