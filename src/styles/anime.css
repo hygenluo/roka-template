@@ -409,6 +409,22 @@ body {
   background-image: none;
 }
 
+/* 关于页的头像：做成一张"角色卡" */
+.about-avatar {
+  width: 160px;
+  margin: 0 0 var(--s4);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 color-mix(in srgb, var(--reed) 60%, transparent);
+  overflow: hidden;
+}
+
+.about-avatar img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* ---------- 尊重系统设置 ---------- */
 
 @media (prefers-reduced-motion: reduce) {

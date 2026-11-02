@@ -9,7 +9,7 @@ const about = site.about ?? [];
 <BaseLayout title="关于" description={site.author.bio}>
   <div class="article">
     <div class="article__body">
-      <header class="article-head article-head--note">
+      <header class="article-head">
         <h1>关于</h1>
         <div class="article-meta">
           <span>{site.author.name}</span>
@@ -20,8 +20,8 @@ const about = site.about ?? [];
       <article class="prose prose--note">
         {
           site.author.avatar && (
-            <div style="margin-bottom:24px;max-width:120px">
-              <Img src={site.author.avatar} alt={site.author.name} priority sizes="120px" />
+            <div class="about-avatar">
+              <Img src={site.author.avatar} alt={site.author.name} priority sizes="160px" />
             </div>
           )
         }
