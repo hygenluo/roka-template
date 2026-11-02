@@ -69,12 +69,15 @@ const latestGames = games.filter((g) => g.data.status === '可玩').slice(0, 2);
     {
       notes.slice(0, 4).map((note) => (
         <a class="note" href={`/notes/${note.id}`}>
-          <div class="note__date">
-            {fmtDate(note.data.date)} · {KIND_LABEL[note.data.kind] ?? note.data.kind}
-            {note.data.rating && <span class="stars"> {stars(note.data.rating)}</span>}
+          <div class="note__date">{fmtDate(note.data.date)}</div>
+          <div class="note__body">
+            {note.data.title && <h3 class="note__title">{note.data.title}</h3>}
+            <p class="note__excerpt">{excerpt(note.body, 88)}</p>
+            <div class="note__meta">
+              <span>{KIND_LABEL[note.data.kind] ?? note.data.kind}</span>
+              {note.data.rating && <span class="stars">{stars(note.data.rating)}</span>}
+            </div>
           </div>
-          {note.data.title && <h3 class="note__title">{note.data.title}</h3>}
-          <p class="note__excerpt">{excerpt(note.body, 88)}</p>
         </a>
       ))
     }

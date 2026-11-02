@@ -34,7 +34,10 @@ const missing = new Map();
 for (const dir of [path.join(ROOT, 'content'), path.join(ROOT, 'src')]) {
   for (const file of walk(dir)) {
     if (file.includes(path.join('src', 'data'))) continue;
-    for (const ch of readFileSync(file, 'utf8')) {
+    // CSS 注释不是页面上的字，去掉再比对
+    const raw = readFileSync(file, 'utf8');
+    const text = path.extname(file) === '.css' ? raw.replace(/\/\*[\s\S]*?\*\//g, '') : raw;
+    for (const ch of text) {
       const cp = ch.codePointAt(0);
       if (cp < 0x20) continue;
       if (covered.has(ch)) continue;

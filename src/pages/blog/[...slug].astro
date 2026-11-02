@@ -35,7 +35,7 @@ const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   stamp={fmtDate(post.data.pubDate)}
 >
   <div class="article">
-    <div class="article__body" style="max-width:calc(var(--measure) + 2rem)">
+    <div class="article__body">
       <header class="article-head">
         <h1>{post.data.title}</h1>
         <p class="lede">{post.data.description}</p>

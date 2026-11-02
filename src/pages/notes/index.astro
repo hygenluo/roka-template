@@ -39,13 +39,16 @@ const kinds = [...new Set(notes.map((n) => n.data.kind))];
         <div style="padding-top:20px">
           {list.map((note) => (
             <a class="note" href={`/notes/${note.id}`}>
-              <div class="note__date">
-                {fmtDate(note.data.date)} · {KIND_LABEL[note.data.kind] ?? note.data.kind}
-                {note.data.rating && <span class="stars"> {stars(note.data.rating)}</span>}
-                {note.data.mood && <span> · {note.data.mood}</span>}
+              <div class="note__date">{fmtDate(note.data.date)}</div>
+              <div class="note__body">
+                {note.data.title && <h3 class="note__title">{note.data.title}</h3>}
+                <p class="note__excerpt">{excerpt(note.body, 110)}</p>
+                <div class="note__meta">
+                  <span>{KIND_LABEL[note.data.kind] ?? note.data.kind}</span>
+                  {note.data.rating && <span class="stars">{stars(note.data.rating)}</span>}
+                  {note.data.mood && <span>{note.data.mood}</span>}
+                </div>
               </div>
-              {note.data.title && <h3 class="note__title">{note.data.title}</h3>}
-              <p class="note__excerpt">{excerpt(note.body, 110)}</p>
             </a>
           ))}
         </div>
