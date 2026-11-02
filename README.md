@@ -116,6 +116,13 @@ pnpm preview:worker  # wrangler 本地起服务，路由行为与线上一致
 `/admin` 是 Decap CMS，`backend.repo` 指向**内容仓库**，所以编辑只产生内容仓库的 commit，
 模板仓库的提交历史永远干净。部署 OAuth 中转见 `workers/oauth-proxy/README.md`。
 
+编辑器的运行时是**自托管**的：`admin/vendor/decap-cms.js`（4.7MB，官方产物）随仓库提交，
+构建时复制到 `public/admin/vendor/`。这样不依赖 unpkg 之类的 CDN——国内也能打开。
+文件大但不影响访客，只有你自己打开 `/admin` 时才下载。
+
+> 为什么不用 npm 装：`decap-cms-app@3.17.3` 的依赖里引用了不存在的 `decap-cms-core@3.20.2`，
+> 装不上。直接锁定官方产物更稳。
+
 **能力边界**（配置时就该知道）：保存到上线 1–2 分钟；批量传图是逐张 commit；
 双仓库后没有编辑分支预览，草稿用 `draft: true` 不渲染。
 

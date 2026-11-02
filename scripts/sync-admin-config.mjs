@@ -4,7 +4,7 @@
  * 这样模板仓库里不出现任何本站信息（域名、内容仓库地址），
  * 它们全部来自构建时环境变量。
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, cpSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -35,6 +35,14 @@ writeFileSync(path.join(DEST, 'config.yml'), config);
 
 if (existsSync(path.join(SRC, 'index.html'))) {
   copyFileSync(path.join(SRC, 'index.html'), path.join(DEST, 'index.html'));
+}
+
+// 自托管的 Decap 运行时（不走外部 CDN，国内也能直接打开）
+const VENDOR_SRC = path.join(SRC, 'vendor');
+if (existsSync(VENDOR_SRC)) {
+  cpSync(VENDOR_SRC, path.join(DEST, 'vendor'), { recursive: true });
+} else {
+  console.warn('[sync-admin] 缺少 admin/vendor/decap-cms.js，/admin 会打不开编辑器');
 }
 
 console.log('[sync-admin] /admin 配置已生成');

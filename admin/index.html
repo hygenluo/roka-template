@@ -16,20 +16,32 @@
   <body data-pagefind-ignore>
     <div class="boot">
       <b>正在加载编辑器…</b>
-      如果一直停在这里，多半是 config.yml 没生成（构建前置脚本没跑）
+      一直停在这里的话：多半是 vendor/decap-cms.js 或 config.yml 没同步过去
     </div>
 
-    <!-- Decap CMS：纯静态，直接写你内容仓库的 git -->
-    <script src="https://unpkg.com/decap-cms@^3.17.0/dist/decap-cms.js"></script>
+    <!-- Decap CMS 自托管：不走任何外部 CDN，国内也能直接打开 -->
+    <script src="./vendor/decap-cms.js"></script>
     <script>
       // 保存后给一句实话：构建要时间，不是没存上
       document.addEventListener('DOMContentLoaded', () => {
-        if (!window.CMS) return;
+        if (!window.CMS) {
+          document.querySelector('.boot').innerHTML =
+            '<b>编辑器没加载出来</b>vendor/decap-cms.js 缺失，重新构建一次';
+          return;
+        }
         window.CMS.registerEventListener({
           name: 'postSave',
           handler: ({ entry }) => {
             const slug = entry?.get?.('slug') || '';
             console.info('[decap] 已提交到内容仓库', slug);
+            // 保存 ≠ 上线：给一个明确的等待提示
+            const tip = document.createElement('div');
+            tip.textContent = '已提交到内容仓库，约 1–2 分钟后线上生效';
+            tip.style.cssText =
+              'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);' +
+              'background:#15181b;color:#f5f6f3;padding:8px 16px;font-size:13px;z-index:9999';
+            document.body.appendChild(tip);
+            setTimeout(() => tip.remove(), 6000);
           },
         });
       });
